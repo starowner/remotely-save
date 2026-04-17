@@ -15,7 +15,12 @@ import type {
 import type { Entity, WebdavConfig } from "./baseTypes";
 import { VALID_REQURL } from "./baseTypesObs";
 import { FakeFs } from "./fsAll";
-import { bufferToArrayBuffer, delay, splitFileSizeToChunkRanges } from "./misc";
+import {
+  arrayBufferLikeToArrayBuffer,
+  bufferToArrayBuffer,
+  delay,
+  splitFileSizeToChunkRanges,
+} from "./misc";
 
 /**
  * https://stackoverflow.com/questions/32850898/how-to-check-if-a-string-has-any-non-iso-8859-1-characters-with-javascript
@@ -892,7 +897,7 @@ export class FakeFsWebdav extends FakeFs {
   async _readFileFromRoot(key: string): Promise<ArrayBuffer> {
     const buff = (await this.client.getFileContents(key)) as BufferLike;
     if (buff instanceof ArrayBuffer) {
-      return buff;
+      return arrayBufferLikeToArrayBuffer(buff);
     } else if (buff instanceof Buffer) {
       return bufferToArrayBuffer(buff);
     }

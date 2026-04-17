@@ -87,10 +87,19 @@ export const mkdirpInVault = async (thePath: string, vault: Vault) => {
  * @param b Buffer
  * @returns ArrayBuffer
  */
+export const arrayBufferLikeToArrayBuffer = (b: ArrayBufferLike) => {
+  if (b instanceof ArrayBuffer) {
+    return b;
+  }
+  return Uint8Array.from(new Uint8Array(b)).buffer;
+};
+
 export const bufferToArrayBuffer = (
   b: Buffer | Uint8Array | ArrayBufferView
 ) => {
-  return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+  return Uint8Array.from(
+    new Uint8Array(b.buffer, b.byteOffset, b.byteLength)
+  ).buffer;
 };
 
 /**

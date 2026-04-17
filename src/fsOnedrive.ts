@@ -19,7 +19,7 @@ import {
 } from "./baseTypes";
 import { VALID_REQURL } from "./baseTypesObs";
 import { FakeFs } from "./fsAll";
-import { bufferToArrayBuffer } from "./misc";
+import { arrayBufferLikeToArrayBuffer, bufferToArrayBuffer } from "./misc";
 
 const SCOPES = ["User.Read", "Files.ReadWrite.AppFolder", "offline_access"];
 const REDIRECT_URI = `obsidian://${COMMAND_CALLBACK_ONEDRIVE}`;
@@ -761,7 +761,7 @@ export class FakeFsOnedrive extends FakeFs {
     } else {
       const res = await fetch(theUrl, {
         method: "PUT",
-        body: payload.subarray(rangeStart, rangeEnd),
+        body: bufferToArrayBuffer(payload.subarray(rangeStart, rangeEnd)),
         headers: {
           "Content-Length": `${rangeEnd - rangeStart}`,
           "Content-Range": `bytes ${rangeStart}-${rangeEnd - 1}/${size}`,
@@ -1046,7 +1046,7 @@ export class FakeFsOnedrive extends FakeFs {
           headers: { "Cache-Control": "no-cache" },
         })
       ).arrayBuffer;
-      return content;
+      return arrayBufferLikeToArrayBuffer(content);
     } else {
       // so strange, sometimes (!!!)
       // we cannot download the file because of CORS
@@ -1055,7 +1055,7 @@ export class FakeFsOnedrive extends FakeFs {
         const content = await (
           await fetch(downloadUrl, { cache: "no-store" })
         ).arrayBuffer();
-        return content;
+        return arrayBufferLikeToArrayBuffer(content);
       } catch (e) {
         // let's try again to bypass the CORS
         const content = (

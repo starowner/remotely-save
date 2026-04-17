@@ -17,6 +17,7 @@ import {
 import type { Entity } from "../../src/baseTypes";
 import { copyFile } from "../../src/copyLogic";
 import type { FakeFs } from "../../src/fsAll";
+import { bufferToArrayBuffer } from "../../src/misc";
 import { MERGABLE_SIZE } from "./baseTypesPro";
 
 export function isMergable(a: Entity, b?: Entity) {
@@ -145,14 +146,14 @@ export async function mergeFile(
         decoder.decode(contentRight)
       );
       // no need to worry about the offset here because the array is new and not sliced
-      newArrayBuffer = new TextEncoder().encode(newText).buffer;
+      newArrayBuffer = bufferToArrayBuffer(new TextEncoder().encode(newText));
     } else {
       const newText = threeWayMerge(
         decoder.decode(contentLeft),
         decoder.decode(contentRight),
         decoder.decode(contentOrig)
       );
-      newArrayBuffer = new TextEncoder().encode(newText).buffer;
+      newArrayBuffer = bufferToArrayBuffer(new TextEncoder().encode(newText));
     }
   }
 

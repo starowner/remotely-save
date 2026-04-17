@@ -15,7 +15,7 @@ const getKeyIVFromPassword = async (
 ) => {
   const k1 = await window.crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(password),
+    bufferToArrayBuffer(new TextEncoder().encode(password)),
     { name: "PBKDF2" },
     false,
     ["deriveKey", "deriveBits"]
@@ -24,7 +24,7 @@ const getKeyIVFromPassword = async (
   const k2 = await window.crypto.subtle.deriveBits(
     {
       name: "PBKDF2",
-      salt: salt,
+      salt: bufferToArrayBuffer(salt),
       iterations: rounds,
       hash: "SHA-256",
     },

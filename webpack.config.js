@@ -30,6 +30,9 @@ module.exports = {
     libraryTarget: "commonjs",
   },
   plugins: [
+    new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+      resource.request = resource.request.replace(/^node:/, "");
+    }),
     new webpack.DefinePlugin({
       "global.DEFAULT_DROPBOX_APP_KEY": `"${DEFAULT_DROPBOX_APP_KEY}"`,
       "global.DEFAULT_ONEDRIVE_CLIENT_ID": `"${DEFAULT_ONEDRIVE_CLIENT_ID}"`,
@@ -93,11 +96,14 @@ module.exports = {
     ],
   },
   resolve: {
+    alias: {
+      "node:url": require.resolve("url/"),
+    },
     extensions: [".tsx", ".ts", ".js"],
     mainFields: ["browser", "module", "main"],
     fallback: {
       // assert: require.resolve("assert"),
-      // buffer: require.resolve("buffer/"),
+      buffer: require.resolve("buffer/"),
       // console: require.resolve("console-browserify"),
       // constants: require.resolve("constants-browserify"),
       crypto: require.resolve("crypto-browserify"),

@@ -10,6 +10,7 @@ import {
 } from "./baseTypes";
 import { FakeFs } from "./fsAll";
 import {
+  arrayBufferLikeToArrayBuffer,
   bufferToArrayBuffer,
   delay,
   getFolderLevels,
@@ -686,7 +687,7 @@ export class FakeFsDropbox extends FakeFs {
     if ((rsp.result as any).fileBlob !== undefined) {
       // we get a Blob
       const content = (rsp.result as any).fileBlob as Blob;
-      return await content.arrayBuffer();
+      return arrayBufferLikeToArrayBuffer(await content.arrayBuffer());
     } else if ((rsp.result as any).fileBinary !== undefined) {
       // we get a Buffer
       const content = (rsp.result as any).fileBinary as Buffer;

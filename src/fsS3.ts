@@ -29,7 +29,11 @@ import { Platform, type RequestUrlParam, requestUrl } from "obsidian";
 import PQueue from "p-queue";
 import { DEFAULT_CONTENT_TYPE, type S3Config } from "./baseTypes";
 import { VALID_REQURL } from "./baseTypesObs";
-import { bufferToArrayBuffer, getFolderLevels } from "./misc";
+import {
+  arrayBufferLikeToArrayBuffer,
+  bufferToArrayBuffer,
+  getFolderLevels,
+} from "./misc";
 
 import type { Entity } from "./baseTypes";
 import { FakeFs } from "./fsAll";
@@ -212,9 +216,9 @@ const getObjectBodyToArrayBuffer = async (
       b.on("end", () => resolve(bufferToArrayBuffer(Buffer.concat(chunks))));
     })) as ArrayBuffer;
   } else if (b instanceof ReadableStream) {
-    return await new Response(b, {}).arrayBuffer();
+    return arrayBufferLikeToArrayBuffer(await new Response(b, {}).arrayBuffer());
   } else if (b instanceof Blob) {
-    return await b.arrayBuffer();
+    return arrayBufferLikeToArrayBuffer(await b.arrayBuffer());
   } else {
     throw TypeError(`The type of ${b} is not one of the supported types`);
   }
