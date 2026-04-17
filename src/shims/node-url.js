@@ -1,7 +1,8 @@
-const url = require("url/");
+const URLCtor = globalThis.URL;
+const URLSearchParamsCtor = globalThis.URLSearchParams;
 
 const fileURLToPath = (value) => {
-  const input = value instanceof URL ? value : new URL(value);
+  const input = value instanceof URLCtor ? value : new URLCtor(value);
   if (input.protocol !== "file:") {
     return input.toString();
   }
@@ -16,6 +17,7 @@ const fileURLToPath = (value) => {
 };
 
 module.exports = {
-  ...url,
   fileURLToPath,
+  URL: URLCtor,
+  URLSearchParams: URLSearchParamsCtor,
 };

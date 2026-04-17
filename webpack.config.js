@@ -97,9 +97,6 @@ module.exports = {
     ],
   },
   resolve: {
-    alias: {
-      "node:url$": path.resolve(__dirname, "src/shims/node-url.js"),
-    },
     extensions: [".tsx", ".ts", ".js"],
     mainFields: ["browser", "module", "main"],
     fallback: {
