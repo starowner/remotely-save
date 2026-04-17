@@ -12,29 +12,46 @@ on:
   push:
     tags:
       - "*" # Push events to matching any tag format, i.e. 1.0, 20.15.10
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release tag to create or update
+        required: true
+        type: string
+      draft:
+        description: Create as draft release
+        required: false
+        default: false
+        type: boolean
+      prerelease:
+        description: Mark release as prerelease
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    environment: env-for-buildci
-
     env:
-      DROPBOX_APP_KEY: ${{secrets.DROPBOX_APP_KEY}}
-      ONEDRIVE_CLIENT_ID: ${{secrets.ONEDRIVE_CLIENT_ID}}
-      ONEDRIVE_AUTHORITY: ${{secrets.ONEDRIVE_AUTHORITY}}
-      REMOTELYSAVE_WEBSITE: ${{secrets.REMOTELYSAVE_WEBSITE}}
-      REMOTELYSAVE_CLIENT_ID: ${{secrets.REMOTELYSAVE_CLIENT_ID}}
-      GOOGLEDRIVE_CLIENT_ID: ${{secrets.GOOGLEDRIVE_CLIENT_ID}}
-      GOOGLEDRIVE_CLIENT_SECRET: ${{secrets.GOOGLEDRIVE_CLIENT_SECRET}}
-      BOX_CLIENT_ID: ${{secrets.BOX_CLIENT_ID}}
-      BOX_CLIENT_SECRET: ${{secrets.BOX_CLIENT_SECRET}}
-      PCLOUD_CLIENT_ID: ${{secrets.PCLOUD_CLIENT_ID}}
-      PCLOUD_CLIENT_SECRET: ${{secrets.PCLOUD_CLIENT_SECRET}}
-      YANDEXDISK_CLIENT_ID: ${{secrets.YANDEXDISK_CLIENT_ID}}
-      YANDEXDISK_CLIENT_SECRET: ${{secrets.YANDEXDISK_CLIENT_SECRET}}
-      KOOFR_CLIENT_ID: ${{secrets.KOOFR_CLIENT_ID}}
-      KOOFR_CLIENT_SECRET: ${{secrets.KOOFR_CLIENT_SECRET}}
+      DROPBOX_APP_KEY: default-dropbox-app-key
+      ONEDRIVE_CLIENT_ID: default-onedrive-client-id
+      ONEDRIVE_AUTHORITY: https://login.microsoftonline.com/common
+      REMOTELYSAVE_WEBSITE: https://remotelysave.com
+      REMOTELYSAVE_CLIENT_ID: default-remotelysave-client-id
+      GOOGLEDRIVE_CLIENT_ID: default-googledrive-client-id
+      GOOGLEDRIVE_CLIENT_SECRET: default-googledrive-client-secret
+      BOX_CLIENT_ID: default-box-client-id
+      BOX_CLIENT_SECRET: default-box-client-secret
+      PCLOUD_CLIENT_ID: default-pcloud-client-id
+      PCLOUD_CLIENT_SECRET: default-pcloud-client-secret
+      YANDEXDISK_CLIENT_ID: default-yandexdisk-client-id
+      YANDEXDISK_CLIENT_SECRET: default-yandexdisk-client-secret
+      KOOFR_CLIENT_ID: default-koofr-client-id
+      KOOFR_CLIENT_SECRET: default-koofr-client-secret
 
     strategy:
       matrix:
@@ -66,11 +83,13 @@ jobs:
       - name: Create Release And Upload
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          target_commitish: ${{ github.sha }}
           files: |
             main.js
             manifest.json
             styles.css
           token: ${{ secrets.GITHUB_TOKEN }}
-          draft: false
-          prerelease: false
+          draft: ${{ github.event.inputs.draft || false }}
+          prerelease: ${{ github.event.inputs.prerelease || false }}
           make_latest: true
