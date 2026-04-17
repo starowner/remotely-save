@@ -30,6 +30,10 @@ module.exports = {
     libraryTarget: "commonjs",
   },
   plugins: [
+    new webpack.NormalModuleReplacementPlugin(
+      /^node:url$/,
+      path.resolve(__dirname, "src/shims/node-url.js")
+    ),
     new webpack.DefinePlugin({
       "global.DEFAULT_DROPBOX_APP_KEY": `"${DEFAULT_DROPBOX_APP_KEY}"`,
       "global.DEFAULT_ONEDRIVE_CLIENT_ID": `"${DEFAULT_ONEDRIVE_CLIENT_ID}"`,
