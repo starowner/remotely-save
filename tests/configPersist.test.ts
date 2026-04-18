@@ -4,42 +4,13 @@ import type { RemotelySavePluginSettings } from "../src/baseTypes";
 import { messyConfigToNormal, normalConfigToMessy } from "../src/configPersist";
 
 const DEFAULT_SETTINGS: RemotelySavePluginSettings = {
-  s3: {
-    s3AccessKeyID: "acc",
-  } as any,
   webdav: {
-    address: "addr",
-  } as any,
-  dropbox: {
+    address: "https://example.com/webdav",
     username: "测试中文",
-  } as any,
-  onedrive: {
-    username: "test 🍎 emoji",
-  } as any,
-  onedrivefull: {
-    username: "test 🍎 emoji",
-  } as any,
-  webdis: {
-    address: "addr",
-  } as any,
-  googledrive: {
-    refreshToken: "xxx",
-  } as any,
-  box: {
-    refreshToken: "xxx",
-  } as any,
-  pcloud: {
-    accessToken: "xxx",
-  } as any,
-  yandexdisk: {
-    refreshToken: "xxx",
-  } as any,
-  koofr: {
-    refreshToken: "xxx",
-  } as any,
-  azureblobstorage: {
-    containerSasUrl: "http://127.0.0.1",
-  } as any,
+    password: "test 🍎 emoji",
+    authType: "basic",
+    manualRecursive: false,
+  },
   password: "password",
   serviceType: "webdav",
   currLogLevel: "info",
