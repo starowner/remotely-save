@@ -41,7 +41,7 @@ const DEFAULT_SETTINGS: RemotelySavePluginSettings = {
     containerSasUrl: "http://127.0.0.1",
   } as any,
   password: "password",
-  serviceType: "s3",
+  serviceType: "webdav",
   currLogLevel: "info",
   ignorePaths: ["somefoldertoignore"],
   enableStatusBarInfo: true,

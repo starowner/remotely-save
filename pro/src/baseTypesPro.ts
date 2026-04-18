@@ -19,8 +19,8 @@ export type PRO_FEATURE_TYPE = "feature-smart_conflict";
 
 export interface FeatureInfo {
   featureName: PRO_FEATURE_TYPE;
-  enableAtTimeMs: bigint;
-  expireAtTimeMs: bigint;
+  enableAtTimeMs: number;
+  expireAtTimeMs: number;
 }
 
 export interface ProConfig {

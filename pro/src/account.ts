@@ -229,11 +229,13 @@ export const checkProRunnableAndFixInplace = async (
   if (config.pro === undefined || config.pro.refreshToken === undefined) {
     throw Error(`you need to "connect" to your account to use PRO features`);
   }
+  const proConfig = Object.assign({}, DEFAULT_PRO_CONFIG, config.pro);
+  config.pro = proConfig;
 
   // every features should have at most 40 days expiration dates
   // and if the time has expired, we also check
   const msIn40Days = 1000 * 60 * 60 * 24 * 40;
-  for (const f of config.pro.enabledProFeatures) {
+  for (const f of proConfig.enabledProFeatures) {
     const tooFarInTheFuture = f.expireAtTimeMs >= Date.now() + msIn40Days;
     const alreadyExpired = f.expireAtTimeMs <= Date.now();
     if (tooFarInTheFuture || alreadyExpired) {
@@ -241,7 +243,7 @@ export const checkProRunnableAndFixInplace = async (
         `the pro feature is too far in the future and has expired, check again.`
       );
       await getAndSaveProFeatures(
-        config.pro,
+        proConfig,
         pluginVersion,
         saveUpdatedConfigFunc
       );
@@ -254,7 +256,7 @@ export const checkProRunnableAndFixInplace = async (
   // check for smart_conflict
   if (config.conflictAction === "smart_conflict") {
     if (
-      config.pro.enabledProFeatures.filter(
+      proConfig.enabledProFeatures.filter(
         (x) => x.featureName === "feature-smart_conflict"
       ).length === 1
     ) {

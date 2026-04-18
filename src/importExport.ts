@@ -37,11 +37,17 @@ export const exportQrCodeUri = async (
   };
 };
 
-export interface ProcessQrCodeResultType {
-  status: "error" | "ok";
-  message: string;
-  result?: RemotelySavePluginSettings;
-}
+export type ProcessQrCodeResultType =
+  | {
+      status: "error";
+      message: string;
+      result?: undefined;
+    }
+  | {
+      status: "ok";
+      message: string;
+      result: RemotelySavePluginSettings;
+    };
 
 /**
  * we also support directly parse the uri, instead of relying on web browser
