@@ -8,7 +8,6 @@ import type {
   Entity,
   MixedEntity,
   RemotelySavePluginSettings,
-  SUPPORTED_SERVICES_TYPE,
   SyncDirectionType,
   SyncTriggerSourceType,
 } from "../../src/baseTypes";
@@ -45,19 +44,12 @@ import {
   upsertFileContentHistoryByVaultAndProfile,
 } from "./localdb";
 
-const copyEntityAndFixTimeFormat = (
-  src: Entity,
-  serviceType: SUPPORTED_SERVICES_TYPE
-) => {
+const copyEntityAndFixTimeFormat = (src: Entity) => {
   const result = Object.assign({}, src);
   if (result.mtimeCli !== undefined) {
     if (result.mtimeCli === 0) {
       result.mtimeCli = undefined;
     } else {
-      if (serviceType === "s3" || serviceType === "dropbox") {
-        // round to second instead of millisecond
-        result.mtimeCli = Math.floor(result.mtimeCli / 1000.0) * 1000;
-      }
       result.mtimeCliFmt = unixTimeToStr(result.mtimeCli);
     }
   }
@@ -65,10 +57,6 @@ const copyEntityAndFixTimeFormat = (
     if (result.ctimeCli === 0) {
       result.ctimeCli = undefined;
     } else {
-      if (serviceType === "s3" || serviceType === "dropbox") {
-        // round to second instead of millisecond
-        result.ctimeCli = Math.floor(result.ctimeCli / 1000.0) * 1000;
-      }
       result.ctimeCliFmt = unixTimeToStr(result.ctimeCli);
     }
   }
@@ -76,10 +64,6 @@ const copyEntityAndFixTimeFormat = (
     if (result.mtimeSvr === 0) {
       result.mtimeSvr = undefined;
     } else {
-      if (serviceType === "s3" || serviceType === "dropbox") {
-        // round to second instead of millisecond
-        result.mtimeSvr = Math.floor(result.mtimeSvr / 1000.0) * 1000;
-      }
       result.mtimeSvrFmt = unixTimeToStr(result.mtimeSvr);
     }
   }
@@ -87,10 +71,6 @@ const copyEntityAndFixTimeFormat = (
     if (result.prevSyncTime === 0) {
       result.prevSyncTime = undefined;
     } else {
-      if (serviceType === "s3" || serviceType === "dropbox") {
-        // round to second instead of millisecond
-        result.prevSyncTime = Math.floor(result.prevSyncTime / 1000.0) * 1000;
-      }
       result.prevSyncTimeFmt = unixTimeToStr(result.prevSyncTime);
     }
   }
@@ -368,7 +348,6 @@ const ensembleMixedEnties = async (
   ignorePaths: string[],
   onlyAllowPaths: string[],
   fsEncrypt: FakeFsEncrypt,
-  serviceType: SUPPORTED_SERVICES_TYPE,
 
   profiler: Profiler | undefined
 ): Promise<SyncPlanType> => {
@@ -386,7 +365,7 @@ const ensembleMixedEnties = async (
   let remoteMaySkipCountAndNotConfig = 0;
   for (const remote of remoteEntityList) {
     const remoteCopied = ensureMTimeOfRemoteEntityValid(
-      copyEntityAndFixTimeFormat(remote, serviceType)
+      copyEntityAndFixTimeFormat(remote)
     );
 
     const key = remoteCopied.key!;
@@ -455,7 +434,7 @@ const ensembleMixedEnties = async (
 
       // TODO: abstraction leaking?
       const prevSyncCopied = await fsEncrypt.encryptEntity(
-        copyEntityAndFixTimeFormat(prevSync, serviceType)
+        copyEntityAndFixTimeFormat(prevSync)
       );
       if (finalMappings.hasOwnProperty(key)) {
         finalMappings[key].prevSync = prevSyncCopied;
@@ -501,7 +480,7 @@ const ensembleMixedEnties = async (
 
     // TODO: abstraction leaking?
     const localCopied = await fsEncrypt.encryptEntity(
-      copyEntityAndFixTimeFormat(local, serviceType)
+      copyEntityAndFixTimeFormat(local)
     );
     if (finalMappings.hasOwnProperty(key)) {
       finalMappings[key].local = localCopied;
@@ -1380,10 +1359,8 @@ const fullfillMTimeOfRemoteEntityInplace = (
   remote: Entity,
   mtimeCli?: number
 ) => {
-  // TODO:
-  // on 20240405, we find that dropbox's mtimeCli is not updated
-  // if the content is not updated even the time is updated...
-  // so we do not check remote.mtimeCli for now..
+  // Preserve caller-provided mtimeCli if available; some backends may not
+  // reliably update client-side mtime metadata after no-content changes.
   if (
     mtimeCli !== undefined &&
     mtimeCli > 0 /* &&
@@ -2011,7 +1988,6 @@ export async function syncer(
       settings.ignorePaths ?? [],
       settings.onlyAllowPaths ?? [],
       fsEncrypt,
-      settings.serviceType,
       profiler
     );
     profiler?.insert(`finish step${step} (build partial mixedEntity)`);

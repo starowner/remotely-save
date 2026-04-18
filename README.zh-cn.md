@@ -19,19 +19,7 @@
 ## 功能
 
 - 支持：
-  - Amazon S3 或兼容 S3 的服务（Cloudflare R2 / BackBlaze B2 / MinIO / ...）
-  - Dropbox
-  - 个人版本 OneDrive（应用文件夹）
-  - 个人版本 OneDrive（根目录）（PRO 功能）
   - Webdav（NextCloud / InfiniCloud / Synology webdav 服务器 / ...）
-  - Webdis
-  - Google Drive（GDrive）（PRO 功能）
-  - Box（PRO 功能）
-  - pCloud（PRO 功能）
-  - Yandex Disk（PRO 功能）
-  - Koofr（PRO 功能）
-  - Azure Blob Storage（PRO 功能）
-  - [这里](./docs/services_connectable_or_not.md)详细展示了更多可连接（或不可连接）的服务。
 - **支持 Obsidian 移动版。**  vault 可以通过云服务作为“中介”在移动和桌面设备之间同步。
 - **支持[端到端加密](./docs/encryption/README.md)。** 如果用户指定密码，文件在发送到云之前会使用 openssl / rclone crypt 格式加密。
 - **支持计划自动同步。** 你也可以使用侧边栏按钮，或者或命令面板中的命令，来手动触发同步（又或者绑定热键组合然后触发）。
@@ -70,44 +58,6 @@
 
 ## 使用方法
 
-### S3
-
-- 教程/示例：
-  - [Cloudflare R2](./docs/remote_services/s3_cloudflare_r2/README.md)
-  - [BackBlaze B2](./docs/remote_services/s3_backblaze_b2/README.md)
-  - [Storj](./docs/remote_services/s3_storj_io/README.md)
-  - [腾讯云 COS](./docs/remote_services/s3_tencent_cloud_cos/README.zh-cn.md) | [Tencent Cloud COS](./docs/remote_services/s3_tencent_cloud_cos/README.md)
-  - [MinIO](./docs/remote_services/s3_minio/README.md)
-  - [又拍云](./docs/remote_services/s3_upyun/README.zh-cn.md)
-- 准备你的 S3（兼容）服务信息：[端点，区域](https://docs.aws.amazon.com/general/latest/gr/s3.html)，[访问密钥 ID ，密钥](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-your-credentials.html)，存储桶名称。
-- 如果你使用 AWS S3，还要创建[策略和用户](./docs/remote_services/s3_general/s3_user_policy.md)。
-- 非常旧版本的 Obsidian 需要[配置 CORS](./docs/remote_services/s3_general/s3_cors_configure.md)。
-- 下载并启用此插件。
-- 在插件的设置中输入你的信息。
-- 如果你没有在设置中设置前缀，存储桶应该是空的，并且仅用于同步一个 vault。你可以在设置中设置前缀，以便同一个存储桶可以存储多个 vault。
-- 如果你想启用端到端加密，也要在设置中设置一个密码。如果你没有指定密码，文件和文件夹将以明文、原始内容同步到云。
-- **每次**你想在本地和远程之间同步你的 vault 的时候，点击侧边栏上的新“圆形箭头”图标。（或者，你可以在设置面板中配置自动同步（见下一章）。）在同步过程中，图标变成“两个半圆形箭头”。除了点击侧边栏上的图标，你还可以在命令面板中激活相应的命令。
-- **同步时要有耐心。** 尤其是在第一次同步时。
-- 如果你想在多个设备之间同步文件，**在使用默认设置时，你的 vault 名称应该相同**。
-
-### Dropbox
-
-- **此插件不是官方Dropbox产品。** 插件只是使用 Dropbox 的公共API。
-- 授权后，插件可以读取你的姓名和电子邮件（在 Dropbox api 上无法取消选择），并读取和写入你的 Dropbox 的 `/Apps/remotely-save` 文件夹中的文件。
-- 如果你决定授权此插件连接到 Dropbox，请访问插件的设置页，选择Dropbox 然后按照说明操作。[更多带截图的信息在这里](./docs/dropbox_review_material/README.md)。
-- 基于密码的端到端加密也是可以的。但请注意，**vault 名称本身未加密**。
-- 如果你想在多个设备之间同步文件，**在使用默认设置时，你的 vault 名称应该相同**。
-
-### 个人 OneDrive（应用文件夹）
-
-- **此插件不是官方 Microsoft / OneDrive 产品。** 插件只是使用 Microsoft 的 [OneDrive 公共 API](https://docs.microsoft.com/en-us/onedrive/developer/rest-api) 而已。
-- 此插件仅适用于“个人 OneDrive”，不适用于“OneDrive for Business。详见 [#11](https://github.com/fyears/remotely-save/issues/11)。
-- 授权后，插件可以读取你的姓名和电子邮件，并读取和写入你的OneDrive的 `/Apps/remotely-save` 文件夹中的文件。**Remotely Save 的免费版本仅连接到应用文件夹，而 PRO 版本可以连接到 Onedrive 的根文件夹。见下面的 PRO 部分。**
-- 如果你决定授权此插件连接到 OneDrive，请访问插件的设置页，选择OneDrive 然后按照说明操作。
-- 基于密码的端到端加密也是可以的。但请注意，**vault 名称本身未加密**。
-- 如果你想在多个设备之间同步文件，**在使用默认设置时，你的 vault 名称应该相同**。
-- 你可能还想查看 [OneDrive 的常见问题](./docs/remote_services/onedrive/README.md)。
-
 ### webdav
 
 - 教程/示例：
@@ -127,41 +77,6 @@
 - 你的数据会同步到你的webdav服务器上的 `${vaultName}` 子文件夹。
 - 基于密码的端到端加密也是可以的。但请注意，**vault 名称本身未加密**。
 - 如果你想在多个设备之间同步文件，**在使用默认设置时，你的 vault 名称应该相同**。
-
-### Webdis
-
-- 教程：
-  - [Webdis](./docs/remote_services/webdis/README.md)
-- 实验性质。
-- 你必须自己设置和保护你的 web 服务器。
-
-### Onedrive（完整访问）（PRO 功能）
-
-PRO（付费）功能“与 Onedrive（完整）同步”允许用户与 Onedrive 根文件夹进行同步。教程和限制在[这里](./docs/remote_services/onedrivefull/README.md)。
-
-### Google Drive（GDrive）（PRO 功能）
-
-PRO（付费）功能“与 Google Drive 同步”允许用户与 Google Drive 进行同步。教程和限制在[这里](./docs/remote_services/googledrive/README.md)。
-
-### Box（PRO 功能）
-
-PRO（付费）功能“与 Box 同步”允许用户与 Box 同步。教程和限制在[这里](./docs/remote_services/box/README.md)。
-
-### pCloud（PRO 功能）
-
-PRO（付费）功能“与 pCloud 同步”允许用户与 pCloud 同步（使用其原生 API 而不是 webdav）。教程和限制在[这里](./docs/remote_services/pcloud/README.md)。
-
-### Yandex Disk（PRO 功能）
-
-PRO（付费）功能“与 Yandex Disk 同步”允许用户与 Yandex Disk 同步（使用其原生 API 而不是 webdav）。教程和限制在[这里](./docs/remote_services/yandexdisk/README.md)。
-
-### Koofr（PRO 功能）
-
-PRO（付费）功能“与 Koofr 同步”允许用户与 Koofr 同步（使用其原生 API 而不是 webdav）。教程和限制在[这里](./docs/remote_services/koofr/README.md)。
-
-### Azure Blob Storage（PRO 功能）
-
-PRO（付费）功能“与 Azure Blob Storage 同步”允许用户与 Azure Blob Storage 同步。教程和限制在[这里](./docs/remote_services/azureblobstorage/README.md)。
 
 ## 智能冲突（PRO功能）
 

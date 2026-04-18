@@ -2,13 +2,11 @@ import { nanoid } from "nanoid";
 import {
   OAUTH2_FORCE_EXPIRE_MILLISECONDS,
   type RemotelySavePluginSettings,
-  type SUPPORTED_SERVICES_TYPE,
 } from "../../src/baseTypes";
 import {
   COMMAND_CALLBACK_PRO,
   type FeatureInfo,
   PRO_CLIENT_ID,
-  type PRO_FEATURE_TYPE,
   PRO_WEBSITE,
   type ProConfig,
 } from "./baseTypesPro";
@@ -268,58 +266,6 @@ export const checkProRunnableAndFixInplace = async (
     }
   } else {
     // good to go
-  }
-
-  const toChecked: {
-    feature: PRO_FEATURE_TYPE;
-    service: SUPPORTED_SERVICES_TYPE;
-    name: string;
-  }[] = [
-    {
-      feature: "feature-google_drive",
-      service: "googledrive",
-      name: "Google Drive",
-    },
-    {
-      feature: "feature-onedrive_full",
-      service: "onedrivefull",
-      name: "Onedrive (Full)",
-    },
-    { feature: "feature-box", service: "box", name: "Box" },
-    { feature: "feature-pcloud", service: "pcloud", name: "pCloud" },
-    {
-      feature: "feature-yandex_disk",
-      service: "yandexdisk",
-      name: "Yandex Disk",
-    },
-    {
-      feature: "feature-koofr",
-      service: "koofr",
-      name: "Koofr",
-    },
-    {
-      feature: "feature-azure_blob_storage",
-      service: "azureblobstorage",
-      name: "Azure Blob Storage",
-    },
-  ];
-
-  for (const { feature, service, name } of toChecked) {
-    console.debug(`checking "${feature}", serviceType=${config.serviceType}`);
-    if (config.serviceType === service) {
-      if (
-        config.pro.enabledProFeatures.filter((x) => x.featureName === feature)
-          .length === 1
-      ) {
-        // good to go
-      } else {
-        errorMsgs.push(
-          `You're trying to use "sync with ${name}" PRO feature but you haven't subscribe to it.`
-        );
-      }
-    } else {
-      // good to go
-    }
   }
 
   if (errorMsgs.length !== 0) {
